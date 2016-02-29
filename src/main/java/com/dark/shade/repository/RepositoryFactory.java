@@ -14,7 +14,7 @@ public final class RepositoryFactory {
     EntityManager.getManager().createSession(url, user, pass);
   }
 
-  public static <T, ID> Repository<T, ID> createDao(Class<T> type) {
+  public static <T, ID> Repository<T, ID> createRepository(Class<T> type) {
     try {
       return new GenericRepository<>(type);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {

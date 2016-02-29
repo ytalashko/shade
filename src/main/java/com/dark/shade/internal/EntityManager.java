@@ -90,7 +90,7 @@ public final class EntityManager {
     }
   }
 
-  public <T> void removeAll(EntityMetadata metadata, Class<T> entityClass) {
+  public void removeAll(EntityMetadata metadata) {
     checkOpen();
     PreparedStatement statement = null;
     try {
@@ -109,7 +109,7 @@ public final class EntityManager {
     }
   }
 
-  public <T> void remove(EntityMetadata metadata, Class<T> entityClass, Object primaryKey) {
+  public void remove(EntityMetadata metadata, Object primaryKey) {
     checkOpen();
     PreparedStatement statement = null;
     try {
@@ -189,10 +189,11 @@ public final class EntityManager {
     }
   }
 
-  public <T> boolean contains(EntityMetadata metadata, Class<T> entityClass, Object primaryKey) {
+  public boolean contains(EntityMetadata metadata, Object primaryKey) {
     checkOpen();
     PreparedStatement statement = null;
     try {
+//      TODO: improve query
       statement = session.prepareStatement(String.format(
           "SELECT * FROM %s WHERE %s=?", metadata.getTableName(), metadata.getIdName()));
       setValue(statement, 1, primaryKey);

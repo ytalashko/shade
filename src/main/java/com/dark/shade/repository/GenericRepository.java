@@ -17,7 +17,7 @@ public class GenericRepository<T, ID> implements Repository<T, ID> {
   private final EntityManager em;
   private final EntityMetadata metadata;
 
-  public GenericRepository(Class<T> type)
+  GenericRepository(Class<T> type)
       throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     this.type = type;
     em = EntityManager.getManager();
@@ -43,7 +43,7 @@ public class GenericRepository<T, ID> implements Repository<T, ID> {
   }
 
   public boolean exists(ID id) {
-    return em.contains(metadata, type, id);
+    return em.contains(metadata, id);
   }
 
   public List<T> findAll() {
@@ -59,10 +59,10 @@ public class GenericRepository<T, ID> implements Repository<T, ID> {
   }
 
   public void delete(ID id) {
-    em.remove(metadata, type, id);
+    em.remove(metadata, id);
   }
 
   public void deleteAll() {
-    em.removeAll(metadata, type);
+    em.removeAll(metadata);
   }
 }
