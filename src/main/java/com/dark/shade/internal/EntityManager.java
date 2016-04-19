@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +56,7 @@ public final class EntityManager {
           valuesBuilder.append(prefix).append("?");
           prefix = ", ";
         }
-        statement = session.prepareStatement(namesBuilder.append(valuesBuilder).append(")").toString());
+        statement = session.prepareStatement(namesBuilder.append(valuesBuilder).append(")").toString(), Statement.RETURN_GENERATED_KEYS);
 
         int index = 1;
         for (String columnName : columnNames) {
@@ -78,6 +79,11 @@ public final class EntityManager {
       }
       statement.executeUpdate();
       commit();
+      ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
+      if (generatedKeysResultSet.next()) {
+//        TODO: need to check, maybe better use generatedKeysResultSet.getLong(1)
+        metadata.getIdAccessor().set(entity, generatedKeysResultSet.getObject(1));
+      }
     } catch (Exception e) {
       throw new ShadeException(e.getMessage(), e);
     } finally {
@@ -193,7 +199,7 @@ public final class EntityManager {
     checkOpen();
     PreparedStatement statement = null;
     try {
-//      TODO: improve query
+//      TODO: improve query to use (COUNT(*) > 0)
       statement = session.prepareStatement(String.format(
           "SELECT * FROM %s WHERE %s=?", metadata.getTableName(), metadata.getIdName()));
       setValue(statement, 1, primaryKey);
